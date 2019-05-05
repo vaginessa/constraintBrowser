@@ -8,6 +8,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.util.AttributeSet
+import android.webkit.DownloadListener
+import android.webkit.WebBackForwardList
+import android.webkit.WebChromeClient
+import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import okhttp3.OkHttpClient
 
@@ -67,8 +71,33 @@ open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, Constrain
         presenter.clearCache(includeDiskFiles)
     }
 
-    override fun restoreState(inState: Bundle) {
+    override fun setWebViewClient(client: WebViewClient) {
+
+    }
+
+    override fun getWebViewClient(): WebViewClient? {
+        return null
+    }
+
+    override fun setDownloadListener(listener: DownloadListener) {
+
+    }
+
+    override fun setWebChromeClient(client: WebChromeClient) {
+
+    }
+
+    override fun getWebChromeClient(): WebChromeClient? {
+        return null
+    }
+
+    override fun restoreState(inState: Bundle): WebBackForwardList? {
         checkThread()
+        return null
+    }
+
+    override fun destroy() {
+
     }
 
     private fun checkThread() {

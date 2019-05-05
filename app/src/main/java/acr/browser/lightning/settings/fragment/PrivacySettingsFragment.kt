@@ -13,7 +13,7 @@ import acr.browser.lightning.utils.ApiUtils
 import acr.browser.lightning.utils.WebUtils
 import acr.browser.lightning.view.LightningView
 import android.os.Bundle
-import android.webkit.WebView
+import androidovshchik.constraintweb.ConstraintWebLayout
 import io.reactivex.Completable
 import io.reactivex.Scheduler
 import javax.inject.Inject
@@ -140,7 +140,7 @@ class PrivacySettingsFragment : AbstractSettingsFragment() {
     }
 
     private fun clearCache() {
-        WebView(requireNotNull(activity)).apply {
+        ConstraintWebLayout(requireNotNull(activity)).apply {
             clearCache(true)
             destroy()
         }

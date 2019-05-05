@@ -5,9 +5,9 @@ import android.os.Build;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebStorage;
+import android.webkit.WebViewDatabase;
 
 import acr.browser.lightning.database.history.HistoryRepository;
-import androidovshchik.constraintweb.ConstraintWebDatabase;
 import androidovshchik.constraintweb.ConstraintWebLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,7 +42,7 @@ public final class WebUtils {
         historyRepository.deleteHistory()
             .subscribeOn(databaseScheduler)
             .subscribe();
-        ConstraintWebDatabase webViewDatabase = new ConstraintWebDatabase(context);
+        WebViewDatabase webViewDatabase = WebViewDatabase.getInstance(context);
         webViewDatabase.clearFormData();
         webViewDatabase.clearHttpAuthUsernamePassword();
         Utils.trimCache(context);
