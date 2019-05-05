@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright 2014 A.C.R. Development -->
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="acr.browser.lightning"
     android:installLocation="auto">
 
@@ -37,9 +37,9 @@
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
-        android:label="@string/app_name">
+        android:label="ConstraintBrowser"
+        tools:replace="android:label">
         <meta-data
             android:name="android.webkit.WebView.MetricsOptOut"
             android:value="true"/>
@@ -53,7 +53,6 @@
             android:clearTaskOnLaunch="false"
             android:colorMode="wideColorGamut"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard"
-            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/Theme.LightTheme"
             android:windowSoftInputMode="stateHidden|adjustResize">
@@ -143,7 +142,6 @@
             android:alwaysRetainTaskState="true"
             android:colorMode="wideColorGamut"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard"
-            android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.DarkTheme"
