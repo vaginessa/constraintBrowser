@@ -1,5 +1,6 @@
 package androidovshchik.constraintweb
 
+import android.content.Context
 import android.os.Bundle
 import android.webkit.DownloadListener
 import android.webkit.WebBackForwardList
@@ -7,6 +8,8 @@ import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
 
 interface ConstraintWebView {
+
+    fun getContext(): Context
 
     fun setWebViewClient(client: WebViewClient)
 

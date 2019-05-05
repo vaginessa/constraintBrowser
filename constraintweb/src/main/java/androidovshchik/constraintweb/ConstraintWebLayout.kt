@@ -13,7 +13,6 @@ import android.webkit.WebBackForwardList
 import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
-import okhttp3.OkHttpClient
 
 open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, ConstraintWebView {
 
@@ -72,22 +71,24 @@ open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, Constrain
     }
 
     override fun setWebViewClient(client: WebViewClient) {
-
+        checkThread()
     }
 
     override fun getWebViewClient(): WebViewClient? {
+        checkThread()
         return null
     }
 
     override fun setDownloadListener(listener: DownloadListener) {
-
+        checkThread()
     }
 
     override fun setWebChromeClient(client: WebChromeClient) {
-
+        checkThread()
     }
 
     override fun getWebChromeClient(): WebChromeClient? {
+        checkThread()
         return null
     }
 
@@ -97,19 +98,12 @@ open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, Constrain
     }
 
     override fun destroy() {
-
+        checkThread()
     }
 
     private fun checkThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             throw RuntimeException("A ConstraintWebLayout method must be called on main thread")
-        }
-    }
-
-    companion object {
-
-        private val httpClient = OkHttpClient().apply {
-            dispatcher().maxRequests = 4
         }
     }
 }
