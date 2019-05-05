@@ -11,6 +11,10 @@ interface ConstraintWebView {
 
     fun getContext(): Context
 
+    fun getUrl(): String
+
+    fun getOriginalUrl(): String
+
     fun setWebViewClient(client: WebViewClient)
 
     fun getWebViewClient(): WebViewClient?
@@ -23,5 +27,5 @@ interface ConstraintWebView {
 
     fun restoreState(inState: Bundle): WebBackForwardList?
 
-    fun destroy()
+    fun reload()
 }

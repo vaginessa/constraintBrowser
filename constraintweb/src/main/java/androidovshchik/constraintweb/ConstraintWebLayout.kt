@@ -16,7 +16,7 @@ import android.widget.FrameLayout
 
 open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, ConstraintWebView {
 
-    private lateinit var presenter: ConstraintWebPresenter
+    protected lateinit var presenter: ConstraintWebPresenter
 
     constructor(context: Context) : this(context, null)
 
@@ -40,34 +40,12 @@ open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, Constrain
         presenter = ConstraintWebPresenter(this)
     }
 
-    override fun loadUrl(url: String, additionalHttpHeaders: Map<String, String>) {
-        checkThread()
-        presenter.loadUrl(url, additionalHttpHeaders)
+    override fun getUrl(): String {
+        return ""
     }
 
-    override fun loadUrl(url: String) {
-        checkThread()
-        presenter.loadUrl(url)
-    }
-
-    override fun postUrl(url: String, postData: ByteArray) {
-        checkThread()
-        presenter.postUrl(url, postData)
-    }
-
-    override fun loadData(data: String, mimeType: String?, encoding: String?) {
-        checkThread()
-        presenter.loadData(data, mimeType, encoding)
-    }
-
-    override fun loadDataWithBaseURL(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?) {
-        checkThread()
-        presenter.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl)
-    }
-
-    override fun clearCache(includeDiskFiles: Boolean) {
-        checkThread()
-        presenter.clearCache(includeDiskFiles)
+    override fun getOriginalUrl(): String {
+        return ""
     }
 
     override fun setWebViewClient(client: WebViewClient) {
@@ -97,11 +75,53 @@ open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, Constrain
         return null
     }
 
-    override fun destroy() {
+    override fun reload() {
         checkThread()
+        presenter.stopLoading()
+        presenter.loadUrl(getUrl())
     }
 
-    private fun checkThread() {
+    override fun loadUrl(url: String, additionalHttpHeaders: Map<String, String>) {
+        checkThread()
+        presenter.loadUrl(url, additionalHttpHeaders)
+    }
+
+    override fun loadUrl(url: String) {
+        checkThread()
+        presenter.loadUrl(url)
+    }
+
+    override fun postUrl(url: String, postData: ByteArray) {
+        checkThread()
+        presenter.postUrl(url, postData)
+    }
+
+    override fun loadData(data: String, mimeType: String?, encoding: String?) {
+        checkThread()
+        presenter.loadData(data, mimeType, encoding)
+    }
+
+    override fun loadDataWithBaseURL(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?) {
+        checkThread()
+        presenter.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl)
+    }
+
+    override fun stopLoading() {
+        checkThread()
+        presenter.stopLoading()
+    }
+
+    override fun clearCache(includeDiskFiles: Boolean) {
+        checkThread()
+        presenter.clearCache(includeDiskFiles)
+    }
+
+    override fun destroy() {
+        checkThread()
+        presenter.destroy()
+    }
+
+    protected fun checkThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             throw RuntimeException("A ConstraintWebLayout method must be called on main thread")
         }
