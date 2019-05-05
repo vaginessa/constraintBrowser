@@ -6,10 +6,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.Log;
-import android.webkit.WebView;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -18,6 +15,9 @@ import java.util.regex.Pattern;
 
 import acr.browser.lightning.R;
 import acr.browser.lightning.constant.Constants;
+import androidovshchik.constraintweb.ConstraintWebLayout;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class IntentUtils {
 
@@ -34,7 +34,7 @@ public class IntentUtils {
         mActivity = activity;
     }
 
-    public boolean startActivityForUrl(@Nullable WebView tab, @NonNull String url) {
+    public boolean startActivityForUrl(@Nullable ConstraintWebLayout tab, @NonNull String url) {
         Intent intent;
         try {
             intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);

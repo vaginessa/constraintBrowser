@@ -2,15 +2,15 @@ package acr.browser.lightning.utils;
 
 import android.content.Context;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebStorage;
-import android.webkit.WebView;
-import android.webkit.WebViewDatabase;
 
 import acr.browser.lightning.database.history.HistoryRepository;
+import androidovshchik.constraintweb.ConstraintWebDatabase;
+import androidovshchik.constraintweb.ConstraintWebLayout;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.Scheduler;
 
 /**
@@ -42,13 +42,13 @@ public final class WebUtils {
         historyRepository.deleteHistory()
             .subscribeOn(databaseScheduler)
             .subscribe();
-        WebViewDatabase webViewDatabase = WebViewDatabase.getInstance(context);
+        ConstraintWebDatabase webViewDatabase = new ConstraintWebDatabase(context);
         webViewDatabase.clearFormData();
         webViewDatabase.clearHttpAuthUsernamePassword();
         Utils.trimCache(context);
     }
 
-    public static void clearCache(@Nullable WebView view) {
+    public static void clearCache(@Nullable ConstraintWebLayout view) {
         if (view == null) return;
         view.clearCache(true);
     }

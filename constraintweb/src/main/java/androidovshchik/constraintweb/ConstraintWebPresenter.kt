@@ -32,4 +32,8 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
     override fun loadDataWithBaseURL(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?) {
 
     }
+
+    override fun clearCache(includeDiskFiles: Boolean) {
+
+    }
 }

@@ -11,4 +11,6 @@ internal interface ConstraintWebRepository {
     fun loadData(data: String, mimeType: String?, encoding: String?)
 
     fun loadDataWithBaseURL(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?)
+
+    fun clearCache(includeDiskFiles: Boolean)
 }
