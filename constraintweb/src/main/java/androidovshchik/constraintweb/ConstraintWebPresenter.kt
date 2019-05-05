@@ -5,6 +5,7 @@ import android.webkit.URLUtil
 import androidovshchik.constraintweb.extensions.await
 import kotlinx.coroutines.*
 import okhttp3.*
+import org.jsoup.Jsoup
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.File
@@ -94,7 +95,49 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
     }
 
     override fun loadDataWithBaseURL(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?) {
+        launch {
+            withContext(Dispatchers.IO) {
+                Jsoup.parse(data).apply {
+                    select("style")
+                        .forEach {
+                            view.get()?.addStyleSheet("${it.data()}\n")
+                        }
+                    select("link[href]")
+                        .forEach {
+                            val call = loadUrl(it.attributes().getIgnoreCase("href"), tag)
+                                ?: return@forEach
+                            launch {
+                                val resource = call.await().body()
+                                when ("${resource?.contentType()?.type()}/${resource?.contentType()?.subtype()}".toLowerCase()) {
+                                    "text/css" -> {
+                                        styles += "${resource?.string() ?: ""}\n"
+                                    }
+                                    "application/octet-stream" -> {
 
+                                    }
+                                }
+                            }
+                        }
+                    select("script")
+                        .forEach {
+                            if (!it.attributes().hasKeyIgnoreCase("src")) {
+                                view.get()?.addDOMScript("${it.data()}\n")
+                                return@forEach
+                            }
+                            val call = loadUrl(it.attributes().getIgnoreCase("src"), tag)
+                                ?: return@forEach
+                            launch {
+                                val resource = call.await().body()
+                                when ("${resource?.contentType()?.type()}/${resource?.contentType()?.subtype()}".toLowerCase()) {
+                                    "application/javascript", "application/x-javascript" -> {
+                                        scripts += "${resource?.string() ?: ""}\n"
+                                    }
+                                }
+                            }
+                        }
+                }
+            }
+        }
     }
 
     override fun stopLoading() {

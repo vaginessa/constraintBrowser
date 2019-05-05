@@ -45,5 +45,9 @@ interface ConstraintWebView {
 
     fun setDocument(document: Document)
 
+    fun addStyleSheet(style: String)
+
+    fun addDOMScript(script: String)
+
     fun reload()
 }

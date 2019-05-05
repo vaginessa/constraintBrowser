@@ -11,6 +11,12 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 suspend fun Call.await(): Response = suspendCancellableCoroutine { continuation ->
+    continuation.invokeOnCancellation {
+        try {
+            cancel()
+        } catch (e: Throwable) {
+        }
+    }
     enqueue(object : Callback {
 
         override fun onResponse(call: Call, response: Response) {
@@ -21,10 +27,4 @@ suspend fun Call.await(): Response = suspendCancellableCoroutine { continuation 
             continuation.resumeWithException(e)
         }
     })
-    continuation.invokeOnCancellation {
-        try {
-            cancel()
-        } catch (e: Throwable) {
-        }
-    }
 }

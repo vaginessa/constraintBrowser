@@ -8,18 +8,20 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.util.AttributeSet
-import android.view.ViewGroup
-import android.webkit.DownloadListener
-import android.webkit.WebBackForwardList
-import android.webkit.WebChromeClient
-import android.webkit.WebViewClient
-import android.widget.FrameLayout
+import android.webkit.*
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import org.jsoup.nodes.Document
 import org.jsoup.parser.Tag
 
-open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, ConstraintWebView {
+open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, ConstraintWebView {
 
     protected lateinit var presenter: ConstraintWebPresenter
+
+    /**
+     * Only for debug purposes
+     */
+    protected var webView: WebView? = null
 
     protected var initialUrl = "about:blank"
 
@@ -51,6 +53,18 @@ open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, Constrain
 
     private fun init() {
         presenter = ConstraintWebPresenter(this)
+        orientation = VERTICAL
+        if (isDebug()) {
+            weightSum = 2f
+            webView = WebView(context).apply {
+                layoutParams = LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    0,
+                    1f
+                )
+            }
+            addView(webView)
+        }
     }
 
     override fun getUrl(): String {
@@ -92,70 +106,94 @@ open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, Constrain
 
     override fun setDocument(document: Document) {
         checkThread()
+        removeAllViewsInLayout()
         val html = ConstraintWebElement(context.applicationContext).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+            layoutParams = LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                if (isDebug()) 0 else LayoutParams.MATCH_PARENT,
+                if (isDebug()) 1f else 0f
             )
             tag = Tag.valueOf("html")
         }
         val body = ConstraintWebElement(context.applicationContext).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.MATCH_PARENT
             )
             tag = Tag.valueOf("body")
         }
         html.addView(body)
         addView(html)
+        html.init(document.head())
         body.init(document.body())
+    }
+
+    override fun addStyleSheet(style: String) {
+        checkThread()
+        styles += style
+    }
+
+    override fun addDOMScript(script: String) {
+        checkThread()
+        scripts += script
     }
 
     override fun reload() {
         checkThread()
+        webView?.reload()
         presenter.stopLoading()
         presenter.loadUrl(getUrl())
     }
 
     override fun loadUrl(url: String, additionalHttpHeaders: Map<String, String>) {
         checkThread()
+        webView?.loadUrl(url, additionalHttpHeaders)
         presenter.loadUrl(url, additionalHttpHeaders)
     }
 
     override fun loadUrl(url: String) {
         checkThread()
+        webView?.loadUrl(url)
         presenter.loadUrl(url)
     }
 
     override fun postUrl(url: String, postData: ByteArray) {
         checkThread()
+        webView?.postUrl(url, postData)
         presenter.postUrl(url, postData)
     }
 
     override fun loadData(data: String, mimeType: String?, encoding: String?) {
         checkThread()
+        webView?.loadData(data, mimeType, encoding)
         presenter.loadData(data, mimeType, encoding)
     }
 
     override fun loadDataWithBaseURL(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?) {
         checkThread()
+        webView?.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl)
         presenter.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl)
     }
 
     override fun stopLoading() {
         checkThread()
+        webView?.stopLoading()
         presenter.stopLoading()
     }
 
     override fun clearCache(includeDiskFiles: Boolean) {
         checkThread()
+        webView?.clearCache(includeDiskFiles)
         presenter.clearCache(includeDiskFiles)
     }
 
     override fun destroy() {
         checkThread()
+        webView?.destroy()
         presenter.destroy()
     }
+
+    protected open fun isDebug() = true
 
     protected fun checkThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
