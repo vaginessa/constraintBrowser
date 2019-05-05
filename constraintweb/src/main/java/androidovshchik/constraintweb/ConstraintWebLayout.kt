@@ -8,15 +8,28 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.util.AttributeSet
+import android.view.ViewGroup
 import android.webkit.DownloadListener
 import android.webkit.WebBackForwardList
 import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
+import org.jsoup.nodes.Document
+import org.jsoup.parser.Tag
 
 open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, ConstraintWebView {
 
     protected lateinit var presenter: ConstraintWebPresenter
+
+    protected var initialUrl = "about:blank"
+
+    protected var currentUrl = initialUrl
+
+    protected var data = ""
+
+    protected var styles = ""
+
+    protected var scripts = ""
 
     constructor(context: Context) : this(context, null)
 
@@ -41,11 +54,13 @@ open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, Constrain
     }
 
     override fun getUrl(): String {
-        return ""
+        checkThread()
+        return currentUrl
     }
 
     override fun getOriginalUrl(): String {
-        return ""
+        checkThread()
+        return initialUrl
     }
 
     override fun setWebViewClient(client: WebViewClient) {
@@ -73,6 +88,27 @@ open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, Constrain
     override fun restoreState(inState: Bundle): WebBackForwardList? {
         checkThread()
         return null
+    }
+
+    override fun setDocument(document: Document) {
+        checkThread()
+        val html = ConstraintWebElement(context.applicationContext).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            tag = Tag.valueOf("html")
+        }
+        val body = ConstraintWebElement(context.applicationContext).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            tag = Tag.valueOf("body")
+        }
+        html.addView(body)
+        addView(html)
+        body.init(document.body())
     }
 
     override fun reload() {
@@ -123,7 +159,7 @@ open class ConstraintWebLayout : FrameLayout, ConstraintWebRepository, Constrain
 
     protected fun checkThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw RuntimeException("A ConstraintWebLayout method must be called on main thread")
+            throw RuntimeException("A ConstraintWebLayout's method must be called on main thread")
         }
     }
 }

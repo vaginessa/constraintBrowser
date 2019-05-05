@@ -70,13 +70,11 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
                     httpClient.newCall(Request.Builder()
                         .url(url.trim())
                         .apply {
-                            if (postData != null) {
-                                post(RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), postData))
-                            } else {
-                                get()
-                            }
                             if (additionalHttpHeaders != null) {
                                 headers(Headers.of(additionalHttpHeaders))
+                            }
+                            if (postData != null) {
+                                post(RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), postData))
                             }
                         }
                         .build())
