@@ -67,6 +67,11 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         }
     }
 
+    override fun isDebug(): Boolean {
+        checkThread()
+        return true
+    }
+
     override fun getUrl(): String {
         checkThread()
         return currentUrl
@@ -138,13 +143,6 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         scripts += script
     }
 
-    override fun reload() {
-        checkThread()
-        webView?.reload()
-        presenter.stopLoading()
-        presenter.loadUrl(getUrl())
-    }
-
     override fun loadUrl(url: String, additionalHttpHeaders: Map<String, String>) {
         checkThread()
         webView?.loadUrl(url, additionalHttpHeaders)
@@ -181,6 +179,12 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         presenter.stopLoading()
     }
 
+    override fun reload() {
+        checkThread()
+        webView?.reload()
+        presenter.reload()
+    }
+
     override fun clearCache(includeDiskFiles: Boolean) {
         checkThread()
         webView?.clearCache(includeDiskFiles)
@@ -192,8 +196,6 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         webView?.destroy()
         presenter.destroy()
     }
-
-    protected open fun isDebug() = true
 
     protected fun checkThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
