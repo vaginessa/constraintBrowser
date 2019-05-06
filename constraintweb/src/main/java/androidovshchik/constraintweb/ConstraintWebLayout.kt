@@ -23,22 +23,32 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
      */
     protected var webView: WebView? = null
 
-    override var debug = true
+    override var debug = false
         get() {
             checkThread()
             return field
         }
+        @Suppress("DEPRECATION")
         set(value) {
             checkThread()
             field = value
             if (value) {
-                webView = WebView(context).apply {
-                    id = R.id.constraint_web_debug_view
-                    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f)
+                if (indexOfChild(webView) < 0) {
+                    webView = WebView(context).apply {
+                        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f)
+                    }
+                    addView(webView)
                 }
-                addView(webView)
             } else {
-
+                removeView(webView)
+                webView?.apply {
+                    stopLoading()
+                    onPause()
+                    clearHistory()
+                    removeAllViews()
+                    destroyDrawingCache()
+                    destroy()
+                }
             }
         }
 
@@ -83,6 +93,8 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         set(value) {
             checkThread()
         }
+
+    override lateinit var settings: WebSettings
 
     override var webViewClient: WebViewClient? = null
         get() {
@@ -134,6 +146,7 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
 
     private fun init() {
         presenter = ConstraintWebPresenter(this)
+        settings = ConstraintWebSettings(this)
         orientation = VERTICAL
     }
 

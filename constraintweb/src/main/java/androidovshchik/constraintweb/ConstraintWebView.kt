@@ -2,10 +2,7 @@ package androidovshchik.constraintweb
 
 import android.content.Context
 import android.os.Bundle
-import android.webkit.DownloadListener
-import android.webkit.WebBackForwardList
-import android.webkit.WebChromeClient
-import android.webkit.WebViewClient
+import android.webkit.*
 import org.jsoup.nodes.Document
 
 interface ConstraintWebView {
@@ -13,7 +10,7 @@ interface ConstraintWebView {
     var debug: Boolean
 
     /**
-     * Html code of webpage
+     * Full html code of webpage including <iframe> tags
      */
     var data: String
 
@@ -30,6 +27,8 @@ interface ConstraintWebView {
      * Readonly field
      */
     var originalUrl: String
+
+    val settings: WebSettings
 
     /**
      * All parameters [android.webkit.WebView] in callback methods will be null

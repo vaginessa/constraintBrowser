@@ -34,6 +34,8 @@ import android.webkit.CookieManager
 import android.webkit.WebSettings
 import android.webkit.WebSettings.LayoutAlgorithm
 import android.webkit.WebView
+import androidovshchik.constraintweb.ConstraintWebLayout
+import androidovshchik.constraintweb.extensions.setAcceptThirdPartyCookies
 import androidx.collection.ArrayMap
 import io.reactivex.Observable
 import io.reactivex.Scheduler
@@ -69,7 +71,7 @@ class LightningView(
      *
      * @return the WebView instance of the tab, which can be null.
      */
-    var webView: WebView? = null
+    var webView: ConstraintWebLayout? = null
         private set
 
     private val uiController: UIController
@@ -184,7 +186,7 @@ class LightningView(
         lightningWebClient = LightningWebClient(activity, this)
         gestureDetector = GestureDetector(activity, CustomGestureListener())
 
-        val tab = WebView(activity).also { webView = it }.apply {
+        val tab = ConstraintWebLayout(activity).also { webView = it }.apply {
             id = View.generateViewId()
 
             drawingCacheBackgroundColor = Color.WHITE
@@ -204,7 +206,7 @@ class LightningView(
             webChromeClient = LightningChromeClient(activity, this@LightningView)
             webViewClient = lightningWebClient
 
-            setDownloadListener(LightningDownloadListener(activity))
+            downloadListener = LightningDownloadListener(activity)
             setOnTouchListener(TouchListener())
             initializeSettings()
         }
@@ -335,7 +337,7 @@ class LightningView(
      * by the user. Distinguish between Incognito and Regular tabs here.
      */
     @SuppressLint("NewApi")
-    private fun WebView.initializeSettings() {
+    private fun ConstraintWebLayout.initializeSettings() {
         settings.apply {
             mediaPlaybackRequiresUserGesture = true
 
