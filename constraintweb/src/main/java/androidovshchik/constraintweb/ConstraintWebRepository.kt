@@ -19,13 +19,18 @@ internal interface ConstraintWebRepository {
 
     /**
      * @param data must contains html code
+     * @param mimeType is not used
+     * @param encoding is not used
      */
     fun loadData(data: String, mimeType: String?, encoding: String?)
 
     /**
      * @param data must contains html code
+     * @param mimeType is not used
+     * @param encoding is not used
+     * @param historyUrl is not used
      */
-    suspend fun loadDataWithBaseURL(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?)
+    fun loadDataWithBaseURL(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?)
 
     fun stopLoading()
 

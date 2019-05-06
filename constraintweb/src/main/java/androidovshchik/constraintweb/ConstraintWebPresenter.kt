@@ -6,6 +6,7 @@ import androidovshchik.constraintweb.extensions.await
 import kotlinx.coroutines.*
 import okhttp3.*
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.File
@@ -24,38 +25,59 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
     private val view = WeakReference(view)
 
     override fun loadUrl(url: String, additionalHttpHeaders: Map<String, String>) {
-        launch {
-            loadUrl(url, additionalHttpHeaders, null)
-        }
+        loadHtml(url, additionalHttpHeaders, null)
     }
 
     override fun loadUrl(url: String) {
-        launch {
-            loadUrl(url, null, null)
-        }
+        loadHtml(url, null, null)
     }
 
     override fun postUrl(url: String, postData: ByteArray) {
+        loadHtml(url, null, postData)
+    }
+
+    private fun loadHtml(url: String, additionalHttpHeaders: Map<String, String>?, postData: ByteArray?) {
         launch {
-            loadUrl(url, null, postData)
+            val html = when (val response = loadUrl(url, additionalHttpHeaders, postData)) {
+                is String -> {
+                    response
+                }
+                is File -> {
+                    withContext(Dispatchers.IO) {
+                        response.bufferedReader()
+                            .use(BufferedReader::readText)
+                    }
+                }
+                is ResponseBody -> {
+                    ""
+                }
+                else -> return@launch
+            }
+            val document = parseHtml(null, html, null, null, null)
+            view.get()?.setDocument(document)
         }
     }
 
     private suspend fun loadUrl(url: String, additionalHttpHeaders: Map<String, String>?, postData: ByteArray?): Any? {
+        var formattedUrl = url.trim()
+        if (formattedUrl.startsWith("//")) {
+            formattedUrl = "http:$formattedUrl"
+        }
         return when {
-            URLUtil.isAssetUrl(url.trim()) -> {
+            URLUtil.isAssetUrl(formattedUrl) -> {
                 view.get()?.getContext()?.let {
                     withContext(Dispatchers.IO) {
-                        it.assets.open(Uri.parse(url.trim())?.path.toString())
+                        it.assets.openFd(Uri.parse(formattedUrl)?.path.toString())
+                            .
                             .bufferedReader()
                             .use(BufferedReader::readText)
                     }
                 }
             }
-            isResourceUrl(url.trim()) -> {
+            isResourceUrl(formattedUrl) -> {
                 view.get()?.getContext()?.let {
                     withContext(Dispatchers.IO) {
-                        val name = Uri.parse(url.trim()).lastPathSegment
+                        val name = Uri.parse(formattedUrl).lastPathSegment
                             ?.split(".")
                             ?.get(0).toString()
                         val id = it.resources.getIdentifier(name, "raw", it.packageName)
@@ -65,16 +87,12 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
                     }
                 }
             }
-            URLUtil.isFileUrl(url.trim()) -> {
-                withContext(Dispatchers.IO) {
-                    File(Uri.parse(url.trim()).path)
-                        .bufferedReader()
-                        .use(BufferedReader::readText)
-                }
+            URLUtil.isFileUrl(formattedUrl) -> {
+                File(Uri.parse(formattedUrl).path)
             }
-            URLUtil.isNetworkUrl(url.trim()) -> {
+            URLUtil.isNetworkUrl(formattedUrl) -> {
                 httpClient.newCall(Request.Builder()
-                    .url(url.trim())
+                    .url(formattedUrl)
                     .apply {
                         if (additionalHttpHeaders != null) {
                             headers(Headers.of(additionalHttpHeaders))
@@ -92,13 +110,17 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
     }
 
     override fun loadData(data: String, mimeType: String?, encoding: String?) {
+        loadDataWithBaseURL(null, data, mimeType, encoding, null)
+    }
+
+    override fun loadDataWithBaseURL(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?) {
         launch {
-            loadDataWithBaseURL(null, data, mimeType, encoding, null)
+            parseHtml(baseUrl, data, mimeType, encoding, historyUrl)
         }
     }
 
-    override suspend fun loadDataWithBaseURL(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?) {
-        withContext(Dispatchers.IO) {
+    private suspend fun parseHtml(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?): Document {
+        return withContext(Dispatchers.IO) {
             Jsoup.parse(data).apply {
                 select("style")
                     .forEach {
@@ -107,8 +129,11 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
                 select("link[href]")
                     .forEach {
                         launch {
-                            val call = loadUrl(it.attributes().getIgnoreCase("href"), null, null)
-                                ?: return@forEach
+                            loadUrl(it.attributes().getIgnoreCase("href"), null, null)?.let {
+                                if () {
+
+                                }
+                            }
                             val resource = call.await().body()
                             when ("${resource?.contentType()?.type()}/${resource?.contentType()?.subtype()}".toLowerCase()) {
                                 "text/css" -> {
@@ -127,8 +152,11 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
                             return@forEach
                         }
                         launch {
-                            val call = loadUrl(it.attributes().getIgnoreCase("src"), tag)
-                                ?: return@forEach
+                            loadUrl(it.attributes().getIgnoreCase("src"), null, null)?.let {
+                                if () {
+
+                                }
+                            }
                             val resource = call.await().body()
                             when ("${resource?.contentType()?.type()}/${resource?.contentType()?.subtype()}".toLowerCase()) {
                                 "application/javascript", "application/x-javascript" -> {

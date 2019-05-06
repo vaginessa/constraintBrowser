@@ -10,7 +10,7 @@ import org.jsoup.nodes.Document
 
 interface ConstraintWebView {
 
-    fun isDebug(): Boolean
+    var debug: Boolean
 
     fun getContext(): Context
 
@@ -19,35 +19,35 @@ interface ConstraintWebView {
     fun getOriginalUrl(): String
 
     /**
-     * All instances of parameter [android.webkit.WebView] will be null in callback methods of client
+     * All instances of parameter [android.webkit.WebView] in callback methods will be null
      */
     fun setWebViewClient(client: WebViewClient)
 
     /**
-     * All instances of parameter {@link WebView} will be null in callback methods of client
+     * All instances of parameter [android.webkit.WebView] in callback methods will be null
      */
     fun getWebViewClient(): WebViewClient?
 
     fun setDownloadListener(listener: DownloadListener)
 
     /**
-     * All instances of parameter [android.webkit.WebView] will be null in callback methods of client
+     * All instances of parameter [android.webkit.WebView] in callback methods will be null
      */
     fun setWebChromeClient(client: WebChromeClient)
 
     /**
-     * All instances of parameter [android.webkit.WebView] will be null in callback methods of client
+     * All instances of parameter [android.webkit.WebView] in callback methods will be null
      */
     fun getWebChromeClient(): WebChromeClient?
-
-    /**
-     * @return is always null
-     */
-    fun restoreState(inState: Bundle): WebBackForwardList?
 
     fun setDocument(document: Document)
 
     fun addStyleSheet(style: String)
 
     fun addDOMScript(script: String)
+
+    /**
+     * @return is always null
+     */
+    fun restoreState(inState: Bundle): WebBackForwardList?
 }

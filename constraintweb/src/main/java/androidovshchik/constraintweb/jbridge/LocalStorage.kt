@@ -3,6 +3,7 @@
 package androidovshchik.constraintweb.jbridge
 
 import android.content.Context
+import com.eclipsesource.v8.V8
 import timber.log.Timber
 
 class LocalStorage(v8: V8, context: Context, name: String) : JObject(v8, "localStorage") {

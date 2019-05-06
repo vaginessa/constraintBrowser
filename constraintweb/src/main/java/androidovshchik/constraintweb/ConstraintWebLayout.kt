@@ -23,6 +23,12 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
      */
     protected var webView: WebView? = null
 
+    protected var viewClient: WebViewClient? = null
+
+    protected var chromeClient: WebChromeClient? = null
+
+    protected var loadListener: DownloadListener? = null
+
     protected var initialUrl = "about:blank"
 
     protected var currentUrl = initialUrl
@@ -54,7 +60,7 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
     private fun init() {
         presenter = ConstraintWebPresenter(this)
         orientation = VERTICAL
-        if (isDebug()) {
+        if (debug) {
             weightSum = 2f
             webView = WebView(context).apply {
                 layoutParams = LayoutParams(
@@ -67,10 +73,7 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         }
     }
 
-    override fun isDebug(): Boolean {
-        checkThread()
-        return true
-    }
+    override var debug = true
 
     override fun getUrl(): String {
         checkThread()
@@ -84,29 +87,27 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
 
     override fun setWebViewClient(client: WebViewClient) {
         checkThread()
+        viewClient = client
     }
 
     override fun getWebViewClient(): WebViewClient? {
         checkThread()
-        return null
+        return viewClient
     }
 
     override fun setDownloadListener(listener: DownloadListener) {
         checkThread()
+        loadListener = listener
     }
 
     override fun setWebChromeClient(client: WebChromeClient) {
         checkThread()
+        chromeClient = client
     }
 
     override fun getWebChromeClient(): WebChromeClient? {
         checkThread()
-        return null
-    }
-
-    override fun restoreState(inState: Bundle): WebBackForwardList? {
-        checkThread()
-        return null
+        return chromeClient
     }
 
     override fun setDocument(document: Document) {
@@ -115,8 +116,8 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         val html = ConstraintWebElement(context.applicationContext).apply {
             layoutParams = LayoutParams(
                 LayoutParams.MATCH_PARENT,
-                if (isDebug()) 0 else LayoutParams.MATCH_PARENT,
-                if (isDebug()) 1f else 0f
+                if (debug) 0 else LayoutParams.MATCH_PARENT,
+                if (debug) 1f else 0f
             )
             tag = Tag.valueOf("html")
         }
@@ -141,6 +142,11 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
     override fun addDOMScript(script: String) {
         checkThread()
         scripts += script
+    }
+
+    override fun restoreState(inState: Bundle): WebBackForwardList? {
+        checkThread()
+        return null
     }
 
     override fun loadUrl(url: String, additionalHttpHeaders: Map<String, String>) {

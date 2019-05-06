@@ -2,6 +2,8 @@
 
 package androidovshchik.constraintweb.jbridge
 
+import com.eclipsesource.v8.V8
+import com.eclipsesource.v8.V8Object
 import timber.log.Timber
 
 @Suppress("LeakingThis")
