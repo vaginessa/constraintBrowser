@@ -1,5 +1,7 @@
 package androidovshchik.constraintweb
 
+import android.webkit.ValueCallback
+
 internal interface ConstraintWebRepository {
 
     /**
@@ -31,6 +33,8 @@ internal interface ConstraintWebRepository {
      * @param historyUrl is not used
      */
     fun loadDataWithBaseURL(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?)
+
+    fun evaluateJavascript(script: String, resultCallback: ValueCallback<String>?)
 
     fun stopLoading()
 

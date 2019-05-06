@@ -34,6 +34,11 @@ interface ConstraintWebView {
     /**
      * Readonly field
      */
+    var title: String
+
+    /**
+     * Readonly field
+     */
     var progress: Int
 
     val hitTestResult: HitTestResult

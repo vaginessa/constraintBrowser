@@ -101,6 +101,16 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
             checkThread()
         }
 
+    override var title = ""
+        get() {
+            checkThread()
+            return field
+        }
+        @Suppress("UNUSED_PARAMETER")
+        set(value) {
+            checkThread()
+        }
+
     override var progress = 0
         get() {
             checkThread()
@@ -289,6 +299,10 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         checkThread()
         webView?.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl)
         presenter.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl)
+    }
+
+    override fun evaluateJavascript(script: String, resultCallback: ValueCallback<String>?) {
+
     }
 
     override fun stopLoading() {

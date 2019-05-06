@@ -30,7 +30,6 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
-import com.anthonycr.mezzanine.MezzanineGenerator
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import java.io.ByteArrayInputStream
@@ -94,7 +93,7 @@ class LightningWebClient(
         !whitelistModel.isUrlAllowedAds(pageUrl) && adBlock.isAd(requestUrl)
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+    override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest): WebResourceResponse? {
         val pageUrl = currentUrl
         if (isAd(pageUrl, request.url.toString())) {
             val empty = ByteArrayInputStream(emptyResponseByteArray)
@@ -105,7 +104,7 @@ class LightningWebClient(
 
     @Suppress("OverridingDeprecatedMember")
     @TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
-    override fun shouldInterceptRequest(view: WebView, url: String): WebResourceResponse? {
+    override fun shouldInterceptRequest(view: WebView?, url: String): WebResourceResponse? {
         val pageUrl = currentUrl
         if (isAd(pageUrl, url)) {
             val empty = ByteArrayInputStream(emptyResponseByteArray)
@@ -114,25 +113,27 @@ class LightningWebClient(
         return null
     }
 
-    override fun onPageFinished(view: WebView, url: String) {
-        if (view.isShown) {
+    override fun onPageFinished(view: WebView?, url: String) {
+        if (lightningView.isShown) {
             uiController.updateUrl(url, false)
-            uiController.setBackButtonEnabled(view.canGoBack())
-            uiController.setForwardButtonEnabled(view.canGoForward())
-            view.postInvalidate()
+            uiController.setBackButtonEnabled(lightningView.canGoBack())
+            uiController.setForwardButtonEnabled(lightningView.canGoForward())
+            lightningView.webView?.postInvalidate()
         }
-        if (view.title == null || view.title.isEmpty()) {
-            lightningView.titleInfo.setTitle(activity.getString(R.string.untitled))
-        } else {
-            lightningView.titleInfo.setTitle(view.title)
+        lightningView.webView?.let {
+            if (it.title.isEmpty()) {
+                lightningView.titleInfo.setTitle(activity.getString(R.string.untitled))
+            } else {
+                lightningView.titleInfo.setTitle(it.title)
+            }
         }
         if (lightningView.invertPage) {
-            view.evaluateJavascript(invertPageJs.provideJs(), null)
+            lightningView.webView?.evaluateJavascript(invertPageJs.provideJs(), null)
         }
         uiController.tabChanged(lightningView)
     }
 
-    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+    override fun onPageStarted(view: WebView?, url: String, favicon: Bitmap?) {
         currentUrl = url
         sslState = if (URLUtil.isHttpsUrl(url)) {
             SSLState.Valid
@@ -147,7 +148,7 @@ class LightningWebClient(
         uiController.tabChanged(lightningView)
     }
 
-    override fun onReceivedHttpAuthRequest(view: WebView, handler: HttpAuthHandler,
+    override fun onReceivedHttpAuthRequest(view: WebView?, handler: HttpAuthHandler,
                                            host: String, realm: String) =
         AlertDialog.Builder(activity).apply {
             val dialogView = LayoutInflater.from(activity).inflate(R.layout.dialog_auth_request, null)
@@ -172,25 +173,27 @@ class LightningWebClient(
             }
         }.resizeAndShow()
 
-    override fun onScaleChanged(view: WebView, oldScale: Float, newScale: Float) {
-        if (view.isShown && lightningView.userPreferences.textReflowEnabled) {
+    override fun onScaleChanged(view: WebView?, oldScale: Float, newScale: Float) {
+        if (lightningView.isShown && lightningView.userPreferences.textReflowEnabled) {
             if (isRunning)
                 return
             val changeInPercent = Math.abs(100 - 100 / zoomScale * newScale)
             if (changeInPercent > 2.5f && !isRunning) {
-                isRunning = view.postDelayed({
+                isRunning = lightningView.webView?.postDelayed({
                     zoomScale = newScale
-                    view.evaluateJavascript(textReflowJs.provideJs()) { isRunning = false }
-                }, 100)
+                    lightningView.webView?.evaluateJavascript(textReflowJs.provideJs(), ValueCallback {
+                        isRunning = false
+                    })
+                }, 100) ?: false
             }
 
         }
     }
 
-    override fun onReceivedSslError(webView: WebView, handler: SslErrorHandler, error: SslError) {
+    override fun onReceivedSslError(webView: WebView?, handler: SslErrorHandler, error: SslError) {
         sslState = SSLState.Invalid(error)
 
-        when (sslWarningPreferences.recallBehaviorForDomain(webView.url)) {
+        when (sslWarningPreferences.recallBehaviorForDomain(lightningView.url)) {
             SslWarningPreferences.Behavior.PROCEED -> return handler.proceed()
             SslWarningPreferences.Behavior.CANCEL -> return handler.cancel()
             null -> Unit
@@ -214,20 +217,20 @@ class LightningWebClient(
             setOnCancelListener { handler.cancel() }
             setPositiveButton(activity.getString(R.string.action_yes)) { _, _ ->
                 if (dontAskAgain.isChecked) {
-                    sslWarningPreferences.rememberBehaviorForDomain(webView.url, SslWarningPreferences.Behavior.PROCEED)
+                    sslWarningPreferences.rememberBehaviorForDomain(lightningView.url, SslWarningPreferences.Behavior.PROCEED)
                 }
                 handler.proceed()
             }
             setNegativeButton(activity.getString(R.string.action_no)) { _, _ ->
                 if (dontAskAgain.isChecked) {
-                    sslWarningPreferences.rememberBehaviorForDomain(webView.url, SslWarningPreferences.Behavior.CANCEL)
+                    sslWarningPreferences.rememberBehaviorForDomain(lightningView.url, SslWarningPreferences.Behavior.CANCEL)
                 }
                 handler.cancel()
             }
         }.resizeAndShow()
     }
 
-    override fun onFormResubmission(view: WebView, dontResend: Message, resend: Message) =
+    override fun onFormResubmission(view: WebView?, dontResend: Message, resend: Message) =
         AlertDialog.Builder(activity).apply {
             setTitle(activity.getString(R.string.title_form_resubmission))
             setMessage(activity.getString(R.string.message_form_resubmission))
@@ -241,14 +244,14 @@ class LightningWebClient(
         }.resizeAndShow()
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean =
+    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest): Boolean =
         shouldOverrideLoading(view, request.url.toString()) || super.shouldOverrideUrlLoading(view, request)
 
     @Suppress("OverridingDeprecatedMember", "DEPRECATION")
-    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean =
+    override fun shouldOverrideUrlLoading(view: WebView?, url: String): Boolean =
         shouldOverrideLoading(view, url) || super.shouldOverrideUrlLoading(view, url)
 
-    private fun shouldOverrideLoading(view: WebView, url: String): Boolean {
+    private fun shouldOverrideLoading(view: WebView?, url: String): Boolean {
         // Check if configured proxy is available
         if (!proxyUtils.isProxyReady(activity)) {
             // User has been notified
@@ -266,7 +269,7 @@ class LightningWebClient(
             return continueLoadingUrl(view, url, headers)
         }
 
-        return if (isMailOrIntent(url, view) || intentUtils.startActivityForUrl(view, url)) {
+        return if (isMailOrIntent(url, view) || intentUtils.startActivityForUrl(lightningView.webView, url)) {
             // If it was a mailto: link, or an intent, or could be launched elsewhere, do that
             true
         } else continueLoadingUrl(view, url, headers)
@@ -274,23 +277,23 @@ class LightningWebClient(
         // If none of the special conditions was met, continue with loading the url
     }
 
-    private fun continueLoadingUrl(webView: WebView, url: String, headers: Map<String, String>) =
+    private fun continueLoadingUrl(webView: WebView?, url: String, headers: Map<String, String>) =
         when {
             headers.isEmpty() -> false
             ApiUtils.doesSupportWebViewHeaders() -> {
-                webView.loadUrl(url, headers)
+                lightningView.webView?.loadUrl(url, headers)
                 true
             }
             else -> false
         }
 
-    private fun isMailOrIntent(url: String, view: WebView): Boolean {
+    private fun isMailOrIntent(url: String, view: WebView?): Boolean {
         if (url.startsWith("mailto:")) {
             val mailTo = MailTo.parse(url)
             val i = Utils.newEmailIntent(mailTo.to, mailTo.subject,
                 mailTo.body, mailTo.cc)
             activity.startActivity(i)
-            view.reload()
+            lightningView.webView?.reload()
             return true
         } else if (url.startsWith("intent://")) {
             val intent = try {

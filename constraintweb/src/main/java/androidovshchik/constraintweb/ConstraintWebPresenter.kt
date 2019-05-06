@@ -2,6 +2,7 @@ package androidovshchik.constraintweb
 
 import android.net.Uri
 import android.webkit.URLUtil
+import android.webkit.ValueCallback
 import androidovshchik.constraintweb.extensions.await
 import kotlinx.coroutines.*
 import okhttp3.*
@@ -52,7 +53,6 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
                 else -> return@launch
             }
             val document = parseHtml(null, html, null, null, null)
-            document.location()
             view.get()?.setDocument(document)
         }
     }
@@ -120,7 +120,7 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
                     }
                 select("link[href]")
                     .forEach {
-                        val css = when (val response = loadUrl(it.attributes().getIgnoreCase("href"), null, null)) {
+                        when (val response = loadUrl(it.attributes().getIgnoreCase("href"), null, null)) {
                             is InputStream -> {
                                 withContext(Dispatchers.IO) {
                                     response.bufferedReader()
@@ -128,18 +128,21 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
                                 }
                             }
                             is Response -> {
-                                response.body()?.string() ?: ""
+                                val body = response.body()
+                                val contentType = body?.contentType()
+                                when ("${contentType?.type()}/${contentType?.subtype()}".toLowerCase()) {
+                                    "text/css" -> {
+                                        body?.string() ?: ""
+                                    }
+                                    "application/octet-stream" -> {
+                                        null
+                                    }
+                                    else -> return@forEach
+                                }
                             }
                             else -> return@forEach
-                        }
-                        val resource = response.body()
-                        when ("${resource?.contentType()?.type()}/${resource?.contentType()?.subtype()}".toLowerCase()) {
-                            "text/css" -> {
-                                styles += "${resource?.string() ?: ""}\n"
-                            }
-                            "application/octet-stream" -> {
-
-                            }
+                        }?.let { css ->
+                            view.get()?.styles?.add(css)
                         }
                     }
                 select("script")
@@ -148,17 +151,34 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
                             view.get()?.scripts?.add(it.data())
                             return@forEach
                         }
-                        val response = loadUrl(it.attributes().getIgnoreCase("src"), null, null)
-                        val resource = call.await().body()
-                        when ("${resource?.contentType()?.type()}/${resource?.contentType()?.subtype()}".toLowerCase()) {
-                            "application/javascript", "application/x-javascript" -> {
-                                scripts += "${resource?.string() ?: ""}\n"
+                        val js = when (val response = loadUrl(it.attributes().getIgnoreCase("src"), null, null)) {
+                            is InputStream -> {
+                                withContext(Dispatchers.IO) {
+                                    response.bufferedReader()
+                                        .use(BufferedReader::readText)
+                                }
                             }
+                            is Response -> {
+                                val body = response.body()
+                                val contentType = body?.contentType()
+                                when ("${contentType?.type()}/${contentType?.subtype()}".toLowerCase()) {
+                                    "application/javascript", "application/x-javascript" -> {
+                                        body?.string() ?: ""
+                                    }
+                                    else -> return@forEach
+                                }
+                            }
+                            else -> return@forEach
                         }
+                        view.get()?.scripts?.add(js)
                     }
             }
             document
         }
+    }
+
+    override fun evaluateJavascript(script: String, resultCallback: ValueCallback<String>?) {
+
     }
 
     override fun stopLoading() {
