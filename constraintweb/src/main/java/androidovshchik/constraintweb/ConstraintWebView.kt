@@ -19,6 +19,8 @@ interface ConstraintWebView {
 
     val scripts: ArrayList<String>
 
+    val history: ArrayList<String>
+
     /**
      * Readonly field
      */
@@ -28,6 +30,13 @@ interface ConstraintWebView {
      * Readonly field
      */
     var originalUrl: String
+
+    /**
+     * Readonly field
+     */
+    var progress: Int
+
+    val hitTestResult: HitTestResult
 
     val settings: WebSettings
 
@@ -42,10 +51,6 @@ interface ConstraintWebView {
     var webChromeClient: WebChromeClient?
 
     var downloadListener: DownloadListener?
-
-    var progress: Int
-
-    var hitTestResult: WebView.HitTestResult
 
     fun getContext(): Context
 

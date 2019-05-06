@@ -75,7 +75,33 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
             return field
         }
 
-    override var url = BLANK_PAGE
+    override val history = arrayListOf<String>()
+        get() {
+            checkThread()
+            return field
+        }
+
+    override var url: String
+        get() {
+            checkThread()
+            return history.lastOrNull() ?: BLANK_PAGE
+        }
+        @Suppress("UNUSED_PARAMETER")
+        set(value) {
+            checkThread()
+        }
+
+    override var originalUrl: String
+        get() {
+            checkThread()
+            return history.getOrNull(0) ?: BLANK_PAGE
+        }
+        @Suppress("UNUSED_PARAMETER")
+        set(value) {
+            checkThread()
+        }
+
+    override var progress = 0
         get() {
             checkThread()
             return field
@@ -85,14 +111,10 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
             checkThread()
         }
 
-    override var originalUrl = BLANK_PAGE
+    override val hitTestResult = HitTestResult()
         get() {
             checkThread()
             return field
-        }
-        @Suppress("UNUSED_PARAMETER")
-        set(value) {
-            checkThread()
         }
 
     override lateinit var settings: WebSettings
@@ -127,26 +149,6 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
             field = value
         }
 
-    override var progress: Int
-        get() {
-            checkThread()
-            return field
-        }
-        set(value) {
-            checkThread()
-            field = value
-        }
-
-    override var hitTestResult: WebView.HitTestResult
-        get() {
-            checkThread()
-            return field
-        }
-        set(value) {
-            checkThread()
-            field = value
-        }
-
     constructor(context: Context) : this(context, null)
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -171,6 +173,74 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         orientation = VERTICAL
     }
 
+    override fun saveState(outState: Bundle): WebBackForwardList? {
+        checkThread()
+        return null
+    }
+
+    override fun restoreState(inState: Bundle): WebBackForwardList? {
+        checkThread()
+        return null
+    }
+
+    override fun pauseTimers() {
+        checkThread()
+    }
+
+    override fun resumeTimers() {
+        checkThread()
+    }
+
+    override fun onPause() {
+        checkThread()
+    }
+
+    override fun onResume() {
+        checkThread()
+    }
+
+    override fun canGoBack(): Boolean {
+        checkThread()
+        return false
+    }
+
+    override fun goBack() {
+        checkThread()
+    }
+
+    override fun canGoForward(): Boolean {
+        checkThread()
+        return false
+    }
+
+    override fun goForward() {
+        checkThread()
+    }
+
+    override fun clearHistory() {
+        checkThread()
+    }
+
+    override fun findNext(forward: Boolean) {
+        checkThread()
+    }
+
+    override fun findAllAsync(find: String) {
+        checkThread()
+    }
+
+    override fun clearMatches() {
+        checkThread()
+    }
+
+    override fun setNetworkAvailable(networkUp: Boolean) {
+        checkThread()
+    }
+
+    override fun requestFocusNodeHref(hrefMsg: Message?) {
+        checkThread()
+    }
+
     override fun setDocument(document: Document) {
         checkThread()
         removeAllViewsInLayout()
@@ -189,71 +259,6 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         addView(html)
         html.init(document.head())
         body.init(document.body())
-    }
-
-    override fun restoreState(inState: Bundle): WebBackForwardList? {
-        checkThread()
-        return null
-    }
-
-    override fun saveState(outState: Bundle): WebBackForwardList? {
-
-    }
-
-    override fun pauseTimers() {
-
-    }
-
-    override fun resumeTimers() {
-
-    }
-
-    override fun onPause() {
-
-    }
-
-    override fun onResume() {
-
-    }
-
-    override fun canGoBack(): Boolean {
-
-    }
-
-    override fun goBack() {
-
-    }
-
-    override fun canGoForward(): Boolean {
-
-    }
-
-    override fun goForward() {
-
-    }
-
-    override fun clearHistory() {
-
-    }
-
-    override fun findNext(forward: Boolean) {
-
-    }
-
-    override fun findAllAsync(find: String) {
-
-    }
-
-    override fun clearMatches() {
-
-    }
-
-    override fun setNetworkAvailable(networkUp: Boolean) {
-
-    }
-
-    override fun requestFocusNodeHref(hrefMsg: Message?) {
-
     }
 
     override fun loadUrl(url: String, additionalHttpHeaders: Map<String, String>) {

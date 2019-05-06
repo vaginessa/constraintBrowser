@@ -107,30 +107,38 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
         }
     }
 
+    //if (".*.(html|css|js|eot|otf|ttf|woff|woff2)$".toRegex(setOf(RegexOption.IGNORE_CASE)).matches(formattedUrl))
     private suspend fun parseHtml(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?): Document {
-        return withContext(Dispatchers.IO) {
-            Jsoup.parse(data, baseUrl ?: "").apply {
+        return coroutineScope {
+            val document = withContext(Dispatchers.IO) {
+                Jsoup.parse(data, baseUrl ?: "")
+            }
+            document.apply {
                 select("style")
                     .forEach {
                         view.get()?.styles?.add(it.data())
                     }
                 select("link[href]")
                     .forEach {
-                        launch {
-                            loadUrl(it.attributes().getIgnoreCase("href"), null, null)?.let {
-                                if () {
-
+                        val css = when (val response = loadUrl(it.attributes().getIgnoreCase("href"), null, null)) {
+                            is InputStream -> {
+                                withContext(Dispatchers.IO) {
+                                    response.bufferedReader()
+                                        .use(BufferedReader::readText)
                                 }
                             }
-                            //if (".*.(html|css|js|eot|otf|ttf|woff|woff2)$".toRegex(setOf(RegexOption.IGNORE_CASE)).matches(formattedUrl))
-                            val resource = call.await().body()
-                            when ("${resource?.contentType()?.type()}/${resource?.contentType()?.subtype()}".toLowerCase()) {
-                                "text/css" -> {
-                                    styles += "${resource?.string() ?: ""}\n"
-                                }
-                                "application/octet-stream" -> {
+                            is Response -> {
+                                response.body()?.string() ?: ""
+                            }
+                            else -> return@forEach
+                        }
+                        val resource = response.body()
+                        when ("${resource?.contentType()?.type()}/${resource?.contentType()?.subtype()}".toLowerCase()) {
+                            "text/css" -> {
+                                styles += "${resource?.string() ?: ""}\n"
+                            }
+                            "application/octet-stream" -> {
 
-                                }
                             }
                         }
                     }
@@ -140,21 +148,16 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
                             view.get()?.scripts?.add(it.data())
                             return@forEach
                         }
-                        launch {
-                            loadUrl(it.attributes().getIgnoreCase("src"), null, null)?.let {
-                                if () {
-
-                                }
-                            }
-                            val resource = call.await().body()
-                            when ("${resource?.contentType()?.type()}/${resource?.contentType()?.subtype()}".toLowerCase()) {
-                                "application/javascript", "application/x-javascript" -> {
-                                    scripts += "${resource?.string() ?: ""}\n"
-                                }
+                        val response = loadUrl(it.attributes().getIgnoreCase("src"), null, null)
+                        val resource = call.await().body()
+                        when ("${resource?.contentType()?.type()}/${resource?.contentType()?.subtype()}".toLowerCase()) {
+                            "application/javascript", "application/x-javascript" -> {
+                                scripts += "${resource?.string() ?: ""}\n"
                             }
                         }
                     }
             }
+            document
         }
     }
 
