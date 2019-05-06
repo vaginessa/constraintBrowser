@@ -7,6 +7,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.os.Message
 import android.util.AttributeSet
 import android.webkit.*
 import android.widget.LinearLayout
@@ -126,6 +127,26 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
             field = value
         }
 
+    override var progress: Int
+        get() {
+            checkThread()
+            return field
+        }
+        set(value) {
+            checkThread()
+            field = value
+        }
+
+    override var hitTestResult: WebView.HitTestResult
+        get() {
+            checkThread()
+            return field
+        }
+        set(value) {
+            checkThread()
+            field = value
+        }
+
     constructor(context: Context) : this(context, null)
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -173,6 +194,66 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
     override fun restoreState(inState: Bundle): WebBackForwardList? {
         checkThread()
         return null
+    }
+
+    override fun saveState(outState: Bundle): WebBackForwardList? {
+
+    }
+
+    override fun pauseTimers() {
+
+    }
+
+    override fun resumeTimers() {
+
+    }
+
+    override fun onPause() {
+
+    }
+
+    override fun onResume() {
+
+    }
+
+    override fun canGoBack(): Boolean {
+
+    }
+
+    override fun goBack() {
+
+    }
+
+    override fun canGoForward(): Boolean {
+
+    }
+
+    override fun goForward() {
+
+    }
+
+    override fun clearHistory() {
+
+    }
+
+    override fun findNext(forward: Boolean) {
+
+    }
+
+    override fun findAllAsync(find: String) {
+
+    }
+
+    override fun clearMatches() {
+
+    }
+
+    override fun setNetworkAvailable(networkUp: Boolean) {
+
+    }
+
+    override fun requestFocusNodeHref(hrefMsg: Message?) {
+
     }
 
     override fun loadUrl(url: String, additionalHttpHeaders: Map<String, String>) {

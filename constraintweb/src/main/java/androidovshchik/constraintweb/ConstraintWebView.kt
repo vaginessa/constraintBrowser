@@ -2,6 +2,7 @@ package androidovshchik.constraintweb
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Message
 import android.webkit.*
 import org.jsoup.nodes.Document
 
@@ -42,12 +43,49 @@ interface ConstraintWebView {
 
     var downloadListener: DownloadListener?
 
-    fun setDocument(document: Document)
+    var progress: Int
+
+    var hitTestResult: WebView.HitTestResult
 
     fun getContext(): Context
 
     /**
      * @return is always null
      */
+    fun saveState(outState: Bundle): WebBackForwardList?
+
+    /**
+     * @return is always null
+     */
     fun restoreState(inState: Bundle): WebBackForwardList?
+
+    fun pauseTimers()
+
+    fun resumeTimers()
+
+    fun onPause()
+
+    fun onResume()
+
+    fun canGoBack(): Boolean
+
+    fun goBack()
+
+    fun canGoForward(): Boolean
+
+    fun goForward()
+
+    fun clearHistory()
+
+    fun findNext(forward: Boolean)
+
+    fun findAllAsync(find: String)
+
+    fun clearMatches()
+
+    fun setNetworkAvailable(networkUp: Boolean)
+
+    fun requestFocusNodeHref(hrefMsg: Message?)
+
+    fun setDocument(document: Document)
 }

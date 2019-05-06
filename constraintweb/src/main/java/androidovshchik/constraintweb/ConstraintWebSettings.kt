@@ -3,9 +3,6 @@ package androidovshchik.constraintweb
 import android.webkit.WebSettings
 import java.lang.ref.WeakReference
 
-/**
- * All parameters [android.webkit.WebView] in callback methods will be null
- */
 open class ConstraintWebSettings(view: ConstraintWebView) : WebSettings() {
 
     protected val webLayout = WeakReference(view)
@@ -63,121 +60,121 @@ open class ConstraintWebSettings(view: ConstraintWebView) : WebSettings() {
     override fun setLayoutAlgorithm(algorithm: LayoutAlgorithm) {}
 
     override fun getDefaultTextEncodingName(): String {
-        return defaultTextEncoding
+        return "UTF-8"
     }
 
     override fun setDefaultTextEncodingName(defaultTextEncoding: String) {}
 
     override fun getDefaultFontSize(): Int {
-        return defaultFontSize
+        return 16
     }
 
     override fun setDefaultFontSize(defaultFontSize: Int) {}
 
     override fun getLoadsImagesAutomatically(): Boolean {
-        return loadsImagesAutomatically
+        return false
     }
 
     override fun setLoadsImagesAutomatically(loadsImagesAutomatically: Boolean) {}
 
     override fun getDefaultFixedFontSize(): Int {
-        return defaultFixedFontSize
+        return 0
     }
 
     override fun setDefaultFixedFontSize(defaultFixedFontSize: Int) {}
 
     override fun getMinimumLogicalFontSize(): Int {
-        return minimumLogicalFontSize
+        return 0
     }
 
     override fun setMinimumLogicalFontSize(minimumLogicalFontSize: Int) {}
 
     override fun getMinimumFontSize(): Int {
-        return minimumFontSize
+        return 0
     }
 
     override fun setMinimumFontSize(minimumFontSize: Int) {}
 
-    override fun getFantasyFontFamily(): String {
-        return fantasyFontFamily
+    override fun getFantasyFontFamily(): String? {
+        return null
     }
 
     override fun setFantasyFontFamily(fantasyFontFamily: String) {}
 
-    override fun getCursiveFontFamily(): String {
-        return cursiveFontFamily
+    override fun getCursiveFontFamily(): String? {
+        return null
     }
 
     override fun setCursiveFontFamily(cursiveFontFamily: String) {}
 
-    override fun getSerifFontFamily(): String {
-        return serifFontFamily
+    override fun getSerifFontFamily(): String? {
+        return null
     }
 
     override fun setSerifFontFamily(serifFontFamily: String) {}
 
-    override fun getSansSerifFontFamily(): String {
-        return sansSerifFontFamily
+    override fun getSansSerifFontFamily(): String? {
+        return null
     }
 
     override fun setSansSerifFontFamily(sansSerifFontFamily: String) {}
 
-    override fun getFixedFontFamily(): String {
-        return fixedFontFamily
+    override fun getFixedFontFamily(): String? {
+        return null
     }
 
     override fun setFixedFontFamily(fixedFontFamily: String) {}
 
-    override fun getStandardFontFamily(): String {
-        return standardFontFamily
+    override fun getStandardFontFamily(): String? {
+        return null
     }
 
     override fun setStandardFontFamily(standardFontFamily: String) {}
 
     override fun getLayoutAlgorithm(): LayoutAlgorithm {
-        return layoutAlgorithm
+        return LayoutAlgorithm.NORMAL
     }
 
     override fun supportMultipleWindows(): Boolean {
-        return supportMultipleWindows
+        return false
     }
 
     override fun getSavePassword(): Boolean {
-        return savePassword
+        return false
     }
 
     override fun setSavePassword(savePassword: Boolean) {}
 
     override fun supportZoom(): Boolean {
-        return supportZoom
+        return false
     }
 
     override fun getAllowFileAccess(): Boolean {
-        return allowFileAccess
+        return false
     }
 
     override fun setAllowFileAccess(allow: Boolean) {}
 
     override fun getBuiltInZoomControls(): Boolean {
-        return builtInZoomControls
+        return false
     }
 
     override fun setBuiltInZoomControls(enabled: Boolean) {}
     
     override fun getUserAgentString(): String? {
-        return userAgentString
+        return "Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"
     }
 
     override fun setUserAgentString(ua: String?) {}
     
     override fun getDatabaseEnabled(): Boolean {
-        return databaseEnabled
+        return false
     }
 
     override fun setDatabaseEnabled(flag: Boolean) {}
 
     override fun getDatabasePath(): String {
-        return databasePath
+        return "database"
     }
 
     override fun setDatabasePath(path: String) {}
@@ -187,19 +184,19 @@ open class ConstraintWebSettings(view: ConstraintWebView) : WebSettings() {
     override fun setGeolocationEnabled(geolocationEnabled: Boolean) {}
     
     override fun getDefaultZoom(): ZoomDensity? {
-        return defaultZoom
+        return null
     }
 
     override fun setDefaultZoom(zoom: ZoomDensity) {}
     
     override fun getDomStorageEnabled(): Boolean {
-        return domStorageEnabled
+        return false
     }
 
     override fun setDomStorageEnabled(flag: Boolean) {}
 
     override fun getLoadWithOverviewMode(): Boolean {
-        return loadWithOverviewMode
+        return false
     }
 
     override fun setLoadWithOverviewMode(flag: Boolean) {}
@@ -211,63 +208,61 @@ open class ConstraintWebSettings(view: ConstraintWebView) : WebSettings() {
     override fun setAppCachePath(appCachePath: String) {}
 
     override fun getBlockNetworkLoads(): Boolean {
-        return blockNetworkLoads
+        return false
     }
 
     override fun setBlockNetworkLoads(flag: Boolean) {}
 
     override fun getPluginState(): PluginState {
-        return pluginState
+        return PluginState.OFF
     }
 
     override fun setPluginState(state: PluginState) {}
 
     override fun enableSmoothTransition(): Boolean {
-        return enableSmoothTransition
+        return false
     }
 
-    override fun setEnableSmoothTransition(enableSmoothTransition: Boolean) {
-        this.enableSmoothTransition = enableSmoothTransition
-    }
+    override fun setEnableSmoothTransition(enableSmoothTransition: Boolean) {}
 
     override fun getAllowContentAccess(): Boolean {
-        return allowContentAccess
+        return false
     }
 
     override fun setAllowContentAccess(allow: Boolean) {}
 
     override fun getDisplayZoomControls(): Boolean {
-        return displayZoomControls
+        return false
     }
 
     override fun setDisplayZoomControls(enabled: Boolean) {}
 
     override fun getTextZoom(): Int {
-        return textZoom
+        return 100
     }
 
     override fun setTextZoom(textZoom: Int) {}
 
     override fun getAllowFileAccessFromFileURLs(): Boolean {
-        return allowFileAccessFromFile
+        return false
     }
 
     override fun setAllowFileAccessFromFileURLs(allow: Boolean) {}
 
     override fun getAllowUniversalAccessFromFileURLs(): Boolean {
-        return allowUniversalAccessFromFile
+        return false
     }
 
     override fun setAllowUniversalAccessFromFileURLs(allow: Boolean) {}
 
     override fun getMediaPlaybackRequiresUserGesture(): Boolean {
-        return mediaPlaybackRequiresUserGesture
+        return false
     }
 
     override fun setMediaPlaybackRequiresUserGesture(require: Boolean) {}
 
     override fun getMixedContentMode(): Int {
-        return mixedContentMode
+        return 0
     }
 
     override fun setMixedContentMode(mixedContentMode: Int) {}
