@@ -16,6 +16,8 @@ import android.app.Activity
 import android.os.Bundle
 import android.os.Message
 import android.webkit.WebView
+import androidovshchik.constraintweb.ConstraintWebLayout
+import androidovshchik.constraintweb.ConstraintWebTransport
 import androidx.appcompat.app.AlertDialog
 import io.reactivex.Scheduler
 import io.reactivex.rxkotlin.subscribeBy
@@ -30,7 +32,7 @@ interface TabInitializer {
      * Initialize the [WebView] instance held by the [LightningView]. If a url is loaded, the
      * provided [headers] should be used to load the url.
      */
-    fun initialize(webView: WebView, headers: Map<String, String>)
+    fun initialize(webView: ConstraintWebLayout, headers: Map<String, String>)
 
 }
 
@@ -39,7 +41,7 @@ interface TabInitializer {
  */
 class UrlInitializer(private val url: String) : TabInitializer {
 
-    override fun initialize(webView: WebView, headers: Map<String, String>) {
+    override fun initialize(webView: ConstraintWebLayout, headers: Map<String, String>) {
         webView.loadUrl(url, headers)
     }
 
@@ -54,7 +56,7 @@ class HomePageInitializer @Inject constructor(
     private val bookmarkPageInitializer: BookmarkPageInitializer
 ) : TabInitializer {
 
-    override fun initialize(webView: WebView, headers: Map<String, String>) {
+    override fun initialize(webView: ConstraintWebLayout, headers: Map<String, String>) {
         val homepage = userPreferences.homepage
 
         when (homepage) {
@@ -111,7 +113,7 @@ abstract class HtmlPageFactoryInitializer(
     @MainScheduler private val foregroundScheduler: Scheduler
 ) : TabInitializer {
 
-    override fun initialize(webView: WebView, headers: Map<String, String>) {
+    override fun initialize(webView: ConstraintWebLayout, headers: Map<String, String>) {
         htmlPageFactory
             .buildPage()
             .subscribeOn(diskScheduler)
@@ -127,9 +129,9 @@ abstract class HtmlPageFactoryInitializer(
  */
 class ResultMessageInitializer(private val resultMessage: Message) : TabInitializer {
 
-    override fun initialize(webView: WebView, headers: Map<String, String>) {
+    override fun initialize(webView: ConstraintWebLayout, headers: Map<String, String>) {
         resultMessage.apply {
-            (obj as WebView.WebViewTransport).webView = webView
+            (obj as ConstraintWebTransport).webView = webView
         }.sendToTarget()
     }
 
@@ -140,7 +142,7 @@ class ResultMessageInitializer(private val resultMessage: Message) : TabInitiali
  */
 class BundleInitializer(private val bundle: Bundle) : TabInitializer {
 
-    override fun initialize(webView: WebView, headers: Map<String, String>) {
+    override fun initialize(webView: ConstraintWebLayout, headers: Map<String, String>) {
         webView.restoreState(bundle)
     }
 
@@ -151,7 +153,7 @@ class BundleInitializer(private val bundle: Bundle) : TabInitializer {
  */
 class NoOpInitializer : TabInitializer {
 
-    override fun initialize(webView: WebView, headers: Map<String, String>) = Unit
+    override fun initialize(webView: ConstraintWebLayout, headers: Map<String, String>) = Unit
 
 }
 
@@ -166,7 +168,7 @@ class PermissionInitializer(
     private val homePageInitializer: HomePageInitializer
 ) : TabInitializer {
 
-    override fun initialize(webView: WebView, headers: Map<String, String>) {
+    override fun initialize(webView: ConstraintWebLayout, headers: Map<String, String>) {
         AlertDialog.Builder(activity).apply {
             setTitle(R.string.title_warning)
             setMessage(R.string.message_blocked_local)

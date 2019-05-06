@@ -10,238 +10,129 @@ open class ConstraintWebSettings(view: ConstraintWebView) : WebSettings() {
 
     protected val webLayout = WeakReference(view)
 
-    private var blockNetworkImage = false
-    private var javaScriptEnabled = false
-    private var javaScriptCanOpenWindowAutomatically = false
-    private var lightTouchEnabled = false
-    private var needInitialFocus = false
-    private var renderPriority = RenderPriority.NORMAL
-    private var saveFormData = false
-    private var supportMultipleWindows = false
-    private var supportZoom = true
-    private var useWideViewPort = false
-    private var cacheMode: Int = 0
-    private var layoutAlgorithm = LayoutAlgorithm.NARROW_COLUMNS
-    private var defaultTextEncoding = "UTF-8"
-    private var defaultFontSize = 16
-    private var loadsImagesAutomatically: Boolean = false
-    private var defaultFixedFontSize: Int = 0
-    private var minimumLogicalFontSize: Int = 0
-    private var minimumFontSize: Int = 0
-    private var fantasyFontFamily: String? = null
-    private var cursiveFontFamily: String? = null
-    private var serifFontFamily: String? = null
-    private var sansSerifFontFamily: String? = null
-    private var fixedFontFamily: String? = null
-    private var standardFontFamily: String? = null
-    private var savePassword: Boolean = false
-
-    private var allowFileAccess = true
-    private var builtInZoomControls = true
-    private var userAgentString: String? = "Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"
-
-    private var databaseEnabled = false
-    private var databasePath = "database"
-    private var geolocationDatabasePath = "geolocation"
-    private var geolocationEnabled = false
-
-    private var defaultZoom: ZoomDensity? = null
-    private var domStorageEnabled = false
-    private var loadWithOverviewMode = false
-    private var appCacheEnabled = false
-    private var appCacheMaxSize: Long = 0
-    private var appCachePath = "appcache"
-
-    private var blockNetworkLoads = false
-    private var pluginState: PluginState = PluginState.OFF
-
-    private var mixedContentMode = 0
-    private var allowContentAccess = true
-    private var displayZoomControls: Boolean = false
-    private var textZoom = 100
-    private var allowFileAccessFromFile = true
-    private var allowUniversalAccessFromFile = true
-    private var mediaPlaybackRequiresUserGesture = true
-    private var enableSmoothTransition: Boolean = false
-
-    @Synchronized
     override fun getBlockNetworkImage(): Boolean {
-        return blockNetworkImage
+        return false
     }
 
-    @Synchronized
-    override fun setBlockNetworkImage(flag: Boolean) {
-        blockNetworkImage = flag
-    }
-
-    @Synchronized
+    override fun setBlockNetworkImage(flag: Boolean) {}
+    
     override fun getJavaScriptEnabled(): Boolean {
-        return javaScriptEnabled
+        return false
     }
 
-    @Synchronized
-    override fun setJavaScriptEnabled(flag: Boolean) {
-        javaScriptEnabled = flag
-    }
+    override fun setJavaScriptEnabled(flag: Boolean) {}
 
     override fun getLightTouchEnabled(): Boolean {
-        return lightTouchEnabled
+        return false
     }
 
-    override fun setLightTouchEnabled(flag: Boolean) {
-        lightTouchEnabled = flag
-    }
+    override fun setLightTouchEnabled(flag: Boolean) {}
 
-    override fun setNeedInitialFocus(flag: Boolean) {
-        needInitialFocus = flag
-    }
+    override fun setNeedInitialFocus(flag: Boolean) {}
 
-    @Synchronized
-    override fun setRenderPriority(priority: RenderPriority) {
-        renderPriority = priority
-    }
+    override fun setRenderPriority(priority: RenderPriority) {}
 
-    @Synchronized
-    override fun setSupportMultipleWindows(support: Boolean) {
-        supportMultipleWindows = support
-    }
+    override fun setSupportMultipleWindows(support: Boolean) {}
 
-    override fun setSupportZoom(support: Boolean) {
-        supportZoom = support
-    }
-
-    override fun setCacheMode(mode: Int) {
-        this.cacheMode = mode
-    }
+    override fun setSupportZoom(support: Boolean) {}
 
     override fun getCacheMode(): Int {
-        return cacheMode
+        return LOAD_DEFAULT
     }
+
+    override fun setCacheMode(mode: Int) {}
 
     override fun getUseWideViewPort(): Boolean {
-        return useWideViewPort
+        return false
     }
 
-    override fun setUseWideViewPort(useWideViewPort: Boolean) {
-        this.useWideViewPort = useWideViewPort
-    }
+    override fun setUseWideViewPort(useWideViewPort: Boolean) {}
 
     override fun getSaveFormData(): Boolean {
-        return saveFormData
+        return false
     }
 
-    override fun setSaveFormData(saveFormData: Boolean) {
-        this.saveFormData = saveFormData
-    }
-
-    override fun setJavaScriptCanOpenWindowsAutomatically(javaScriptCanOpenWindowAutomatically: Boolean) {
-        this.javaScriptCanOpenWindowAutomatically = javaScriptCanOpenWindowAutomatically
-    }
+    override fun setSaveFormData(saveFormData: Boolean) {}
 
     override fun getJavaScriptCanOpenWindowsAutomatically(): Boolean {
-        return this.javaScriptCanOpenWindowAutomatically
+        return false
     }
 
-    @Synchronized
-    override fun setLayoutAlgorithm(algorithm: LayoutAlgorithm) {
-        this.layoutAlgorithm = algorithm
-    }
+    override fun setJavaScriptCanOpenWindowsAutomatically(javaScriptCanOpenWindowAutomatically: Boolean) {}
+
+    override fun setLayoutAlgorithm(algorithm: LayoutAlgorithm) {}
 
     override fun getDefaultTextEncodingName(): String {
-        return this.defaultTextEncoding
+        return defaultTextEncoding
     }
 
-    override fun setDefaultTextEncodingName(defaultTextEncoding: String) {
-        this.defaultTextEncoding = defaultTextEncoding
-    }
+    override fun setDefaultTextEncodingName(defaultTextEncoding: String) {}
 
     override fun getDefaultFontSize(): Int {
         return defaultFontSize
     }
 
-    override fun setDefaultFontSize(defaultFontSize: Int) {
-        this.defaultFontSize = defaultFontSize
-    }
+    override fun setDefaultFontSize(defaultFontSize: Int) {}
 
     override fun getLoadsImagesAutomatically(): Boolean {
         return loadsImagesAutomatically
     }
 
-    override fun setLoadsImagesAutomatically(loadsImagesAutomatically: Boolean) {
-        this.loadsImagesAutomatically = loadsImagesAutomatically
-    }
+    override fun setLoadsImagesAutomatically(loadsImagesAutomatically: Boolean) {}
 
     override fun getDefaultFixedFontSize(): Int {
         return defaultFixedFontSize
     }
 
-    override fun setDefaultFixedFontSize(defaultFixedFontSize: Int) {
-        this.defaultFixedFontSize = defaultFixedFontSize
-    }
+    override fun setDefaultFixedFontSize(defaultFixedFontSize: Int) {}
 
     override fun getMinimumLogicalFontSize(): Int {
         return minimumLogicalFontSize
     }
 
-    override fun setMinimumLogicalFontSize(minimumLogicalFontSize: Int) {
-        this.minimumLogicalFontSize = minimumLogicalFontSize
-    }
+    override fun setMinimumLogicalFontSize(minimumLogicalFontSize: Int) {}
 
     override fun getMinimumFontSize(): Int {
         return minimumFontSize
     }
 
-    override fun setMinimumFontSize(minimumFontSize: Int) {
-        this.minimumFontSize = minimumFontSize
-    }
+    override fun setMinimumFontSize(minimumFontSize: Int) {}
 
     override fun getFantasyFontFamily(): String {
         return fantasyFontFamily
     }
 
-    override fun setFantasyFontFamily(fantasyFontFamily: String) {
-        this.fantasyFontFamily = fantasyFontFamily
-    }
+    override fun setFantasyFontFamily(fantasyFontFamily: String) {}
 
     override fun getCursiveFontFamily(): String {
         return cursiveFontFamily
     }
 
-    override fun setCursiveFontFamily(cursiveFontFamily: String) {
-        this.cursiveFontFamily = cursiveFontFamily
-    }
+    override fun setCursiveFontFamily(cursiveFontFamily: String) {}
 
     override fun getSerifFontFamily(): String {
         return serifFontFamily
     }
 
-    override fun setSerifFontFamily(serifFontFamily: String) {
-        this.serifFontFamily = serifFontFamily
-    }
+    override fun setSerifFontFamily(serifFontFamily: String) {}
 
     override fun getSansSerifFontFamily(): String {
         return sansSerifFontFamily
     }
 
-    override fun setSansSerifFontFamily(sansSerifFontFamily: String) {
-        this.sansSerifFontFamily = sansSerifFontFamily
-    }
+    override fun setSansSerifFontFamily(sansSerifFontFamily: String) {}
 
     override fun getFixedFontFamily(): String {
         return fixedFontFamily
     }
 
-    override fun setFixedFontFamily(fixedFontFamily: String) {
-        this.fixedFontFamily = fixedFontFamily
-    }
+    override fun setFixedFontFamily(fixedFontFamily: String) {}
 
     override fun getStandardFontFamily(): String {
         return standardFontFamily
     }
 
-    override fun setStandardFontFamily(standardFontFamily: String) {
-        this.standardFontFamily = standardFontFamily
-    }
+    override fun setStandardFontFamily(standardFontFamily: String) {}
 
     override fun getLayoutAlgorithm(): LayoutAlgorithm {
         return layoutAlgorithm
@@ -255,9 +146,7 @@ open class ConstraintWebSettings(view: ConstraintWebView) : WebSettings() {
         return savePassword
     }
 
-    override fun setSavePassword(savePassword: Boolean) {
-        this.savePassword = savePassword
-    }
+    override fun setSavePassword(savePassword: Boolean) {}
 
     override fun supportZoom(): Boolean {
         return supportZoom
@@ -267,116 +156,71 @@ open class ConstraintWebSettings(view: ConstraintWebView) : WebSettings() {
         return allowFileAccess
     }
 
-    override fun setAllowFileAccess(allow: Boolean) {
-        allowFileAccess = allow
-    }
+    override fun setAllowFileAccess(allow: Boolean) {}
 
     override fun getBuiltInZoomControls(): Boolean {
         return builtInZoomControls
     }
 
-    override fun setBuiltInZoomControls(enabled: Boolean) {
-        builtInZoomControls = enabled
-    }
-
-    @Synchronized
-    override fun setUserAgentString(ua: String?) {
-        userAgentString = ua
-    }
-
-    @Synchronized
+    override fun setBuiltInZoomControls(enabled: Boolean) {}
+    
     override fun getUserAgentString(): String? {
         return userAgentString
     }
-    // End API 3
 
-    @Synchronized
+    override fun setUserAgentString(ua: String?) {}
+    
     override fun getDatabaseEnabled(): Boolean {
         return databaseEnabled
     }
 
-    @Synchronized
-    override fun setDatabaseEnabled(flag: Boolean) {
-        databaseEnabled = flag
-    }
+    override fun setDatabaseEnabled(flag: Boolean) {}
 
-    @Synchronized
-    override fun setDatabasePath(path: String) {
-        databasePath = path
-    }
-
-    @Synchronized
     override fun getDatabasePath(): String {
         return databasePath
     }
 
-    override fun setGeolocationDatabasePath(geolocationDatabasePath: String) {
-        this.geolocationDatabasePath = geolocationDatabasePath
-    }
+    override fun setDatabasePath(path: String) {}
 
-    override fun setGeolocationEnabled(geolocationEnabled: Boolean) {
-        this.geolocationEnabled = geolocationEnabled
-    }
-    // End API 5
+    override fun setGeolocationDatabasePath(geolocationDatabasePath: String) {}
 
-    override fun setDefaultZoom(zoom: ZoomDensity) {
-        this.defaultZoom = zoom
-    }
-
+    override fun setGeolocationEnabled(geolocationEnabled: Boolean) {}
+    
     override fun getDefaultZoom(): ZoomDensity? {
         return defaultZoom
     }
 
-    @Synchronized
+    override fun setDefaultZoom(zoom: ZoomDensity) {}
+    
     override fun getDomStorageEnabled(): Boolean {
         return domStorageEnabled
     }
 
-    @Synchronized
-    override fun setDomStorageEnabled(flag: Boolean) {
-        domStorageEnabled = flag
-    }
+    override fun setDomStorageEnabled(flag: Boolean) {}
 
     override fun getLoadWithOverviewMode(): Boolean {
         return loadWithOverviewMode
     }
 
-    override fun setLoadWithOverviewMode(flag: Boolean) {
-        loadWithOverviewMode = flag
-    }
+    override fun setLoadWithOverviewMode(flag: Boolean) {}
 
-    override fun setAppCacheEnabled(appCacheEnabled: Boolean) {
-        this.appCacheEnabled = appCacheEnabled
-    }
+    override fun setAppCacheEnabled(appCacheEnabled: Boolean) {}
 
-    override fun setAppCacheMaxSize(appCacheMaxSize: Long) {
-        this.appCacheMaxSize = appCacheMaxSize
-    }
+    override fun setAppCacheMaxSize(appCacheMaxSize: Long) {}
 
-    override fun setAppCachePath(appCachePath: String) {
-        this.appCachePath = appCachePath
-    }
-    // End API 7
+    override fun setAppCachePath(appCachePath: String) {}
 
-    @Synchronized
     override fun getBlockNetworkLoads(): Boolean {
         return blockNetworkLoads
     }
 
-    @Synchronized
-    override fun setBlockNetworkLoads(flag: Boolean) {
-        blockNetworkLoads = flag
-    }
+    override fun setBlockNetworkLoads(flag: Boolean) {}
 
-    @Synchronized
     override fun getPluginState(): PluginState {
         return pluginState
     }
 
-    @Synchronized
-    override fun setPluginState(state: PluginState) {
-        pluginState = state
-    }/
+    override fun setPluginState(state: PluginState) {}
 
     override fun enableSmoothTransition(): Boolean {
         return enableSmoothTransition
@@ -390,76 +234,59 @@ open class ConstraintWebSettings(view: ConstraintWebView) : WebSettings() {
         return allowContentAccess
     }
 
-    override fun setAllowContentAccess(allow: Boolean) {
-        allowContentAccess = allow
-    }
+    override fun setAllowContentAccess(allow: Boolean) {}
 
     override fun getDisplayZoomControls(): Boolean {
         return displayZoomControls
     }
 
-    override fun setDisplayZoomControls(enabled: Boolean) {
-        displayZoomControls = enabled
-    }
+    override fun setDisplayZoomControls(enabled: Boolean) {}
 
     override fun getTextZoom(): Int {
         return textZoom
     }
 
-    override fun setTextZoom(textZoom: Int) {
-        this.textZoom = textZoom
-    }
+    override fun setTextZoom(textZoom: Int) {}
 
     override fun getAllowFileAccessFromFileURLs(): Boolean {
         return allowFileAccessFromFile
     }
 
-    override fun setAllowFileAccessFromFileURLs(allow: Boolean) {
-        allowFileAccessFromFile = allow
-    }
+    override fun setAllowFileAccessFromFileURLs(allow: Boolean) {}
 
     override fun getAllowUniversalAccessFromFileURLs(): Boolean {
         return allowUniversalAccessFromFile
     }
 
-    override fun setAllowUniversalAccessFromFileURLs(allow: Boolean) {
-        allowUniversalAccessFromFile = allow
-    }
+    override fun setAllowUniversalAccessFromFileURLs(allow: Boolean) {}
 
     override fun getMediaPlaybackRequiresUserGesture(): Boolean {
         return mediaPlaybackRequiresUserGesture
     }
 
-    override fun setMediaPlaybackRequiresUserGesture(require: Boolean) {
-        mediaPlaybackRequiresUserGesture = require
-    }
+    override fun setMediaPlaybackRequiresUserGesture(require: Boolean) {}
 
     override fun getMixedContentMode(): Int {
         return mixedContentMode
     }
 
-    override fun setMixedContentMode(mixedContentMode: Int) {
-        this.mixedContentMode = mixedContentMode
-    }
+    override fun setMixedContentMode(mixedContentMode: Int) {}
 
     override fun getOffscreenPreRaster(): Boolean {
         return false
     }
 
-    override fun setOffscreenPreRaster(enabled: Boolean) {
-    }
+    override fun setOffscreenPreRaster(enabled: Boolean) {}
 
     override fun getDisabledActionModeMenuItems(): Int {
         return 0
     }
 
-    override fun setDisabledActionModeMenuItems(menuItems: Int) {
-    }
+    override fun setDisabledActionModeMenuItems(menuItems: Int) {}
 
     override fun getSafeBrowsingEnabled(): Boolean {
         return false
     }
 
-    override fun setSafeBrowsingEnabled(enabled: Boolean) {
-    }
+    override fun setSafeBrowsingEnabled(enabled: Boolean) {}
 }
