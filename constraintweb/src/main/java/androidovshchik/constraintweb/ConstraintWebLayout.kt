@@ -23,21 +23,96 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
      */
     protected var webView: WebView? = null
 
-    protected var viewClient: WebViewClient? = null
+    override var debug = true
+        get() {
+            checkThread()
+            return field
+        }
+        set(value) {
+            checkThread()
+            field = value
+            if (value) {
+                webView = WebView(context).apply {
+                    id = R.id.constraint_web_debug_view
+                    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f)
+                }
+                addView(webView)
+            } else {
 
-    protected var chromeClient: WebChromeClient? = null
+            }
+        }
 
-    protected var loadListener: DownloadListener? = null
+    override var data = ""
+        get() {
+            checkThread()
+            return field
+        }
+        set(value) {
+            checkThread()
+            field = value
+        }
 
-    protected var initialUrl = "about:blank"
+    override val styles = arrayListOf<String>()
+        get() {
+            checkThread()
+            return field
+        }
 
-    protected var currentUrl = initialUrl
+    override val scripts = arrayListOf<String>()
+        get() {
+            checkThread()
+            return field
+        }
 
-    protected var data = ""
+    override var url = BLANK_PAGE
+        get() {
+            checkThread()
+            return field
+        }
+        @Suppress("UNUSED_PARAMETER")
+        set(value) {
+            checkThread()
+        }
 
-    protected var styles = ""
+    override var originalUrl = BLANK_PAGE
+        get() {
+            checkThread()
+            return field
+        }
+        @Suppress("UNUSED_PARAMETER")
+        set(value) {
+            checkThread()
+        }
 
-    protected var scripts = ""
+    override var webViewClient: WebViewClient? = null
+        get() {
+            checkThread()
+            return field
+        }
+        set(value) {
+            checkThread()
+            field = value
+        }
+
+    override var webChromeClient: WebChromeClient? = null
+        get() {
+            checkThread()
+            return field
+        }
+        set(value) {
+            checkThread()
+            field = value
+        }
+
+    override var downloadListener: DownloadListener? = null
+        get() {
+            checkThread()
+            return field
+        }
+        set(value) {
+            checkThread()
+            field = value
+        }
 
     constructor(context: Context) : this(context, null)
 
@@ -60,65 +135,13 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
     private fun init() {
         presenter = ConstraintWebPresenter(this)
         orientation = VERTICAL
-        if (debug) {
-            weightSum = 2f
-            webView = WebView(context).apply {
-                layoutParams = LayoutParams(
-                    LayoutParams.MATCH_PARENT,
-                    0,
-                    1f
-                )
-            }
-            addView(webView)
-        }
-    }
-
-    override var debug = true
-
-    override fun getUrl(): String {
-        checkThread()
-        return currentUrl
-    }
-
-    override fun getOriginalUrl(): String {
-        checkThread()
-        return initialUrl
-    }
-
-    override fun setWebViewClient(client: WebViewClient) {
-        checkThread()
-        viewClient = client
-    }
-
-    override fun getWebViewClient(): WebViewClient? {
-        checkThread()
-        return viewClient
-    }
-
-    override fun setDownloadListener(listener: DownloadListener) {
-        checkThread()
-        loadListener = listener
-    }
-
-    override fun setWebChromeClient(client: WebChromeClient) {
-        checkThread()
-        chromeClient = client
-    }
-
-    override fun getWebChromeClient(): WebChromeClient? {
-        checkThread()
-        return chromeClient
     }
 
     override fun setDocument(document: Document) {
         checkThread()
         removeAllViewsInLayout()
         val html = ConstraintWebElement(context.applicationContext).apply {
-            layoutParams = LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                if (debug) 0 else LayoutParams.MATCH_PARENT,
-                if (debug) 1f else 0f
-            )
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f)
             tag = Tag.valueOf("html")
         }
         val body = ConstraintWebElement(context.applicationContext).apply {
@@ -132,16 +155,6 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         addView(html)
         html.init(document.head())
         body.init(document.body())
-    }
-
-    override fun addStyleSheet(style: String) {
-        checkThread()
-        styles += style
-    }
-
-    override fun addDOMScript(script: String) {
-        checkThread()
-        scripts += script
     }
 
     override fun restoreState(inState: Bundle): WebBackForwardList? {
@@ -203,9 +216,14 @@ open class ConstraintWebLayout : LinearLayout, ConstraintWebRepository, Constrai
         presenter.destroy()
     }
 
-    protected fun checkThread() {
+    protected open fun checkThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             throw RuntimeException("A ConstraintWebLayout's method must be called on main thread")
         }
+    }
+
+    companion object {
+
+        const val BLANK_PAGE = "about:blank"
     }
 }

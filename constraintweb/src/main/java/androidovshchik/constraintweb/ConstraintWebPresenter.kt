@@ -10,6 +10,7 @@ import org.jsoup.nodes.Document
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.File
+import java.io.InputStream
 import java.lang.ref.WeakReference
 
 class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, ConstraintWebRepository {
@@ -39,21 +40,19 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
     private fun loadHtml(url: String, additionalHttpHeaders: Map<String, String>?, postData: ByteArray?) {
         launch {
             val html = when (val response = loadUrl(url, additionalHttpHeaders, postData)) {
-                is String -> {
-                    response
-                }
-                is File -> {
+                is InputStream -> {
                     withContext(Dispatchers.IO) {
                         response.bufferedReader()
                             .use(BufferedReader::readText)
                     }
                 }
-                is ResponseBody -> {
-                    ""
+                is Response -> {
+                    response.body()?.string() ?: ""
                 }
                 else -> return@launch
             }
             val document = parseHtml(null, html, null, null, null)
+            document.location()
             view.get()?.setDocument(document)
         }
     }
@@ -65,30 +64,20 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
         }
         return when {
             URLUtil.isAssetUrl(formattedUrl) -> {
-                view.get()?.getContext()?.let {
-                    withContext(Dispatchers.IO) {
-                        it.assets.openFd(Uri.parse(formattedUrl)?.path.toString())
-                            .
-                            .bufferedReader()
-                            .use(BufferedReader::readText)
-                    }
-                }
+                view.get()?.getContext()?.assets
+                    ?.open(Uri.parse(formattedUrl)?.path.toString())
             }
             isResourceUrl(formattedUrl) -> {
                 view.get()?.getContext()?.let {
-                    withContext(Dispatchers.IO) {
-                        val name = Uri.parse(formattedUrl).lastPathSegment
-                            ?.split(".")
-                            ?.get(0).toString()
-                        val id = it.resources.getIdentifier(name, "raw", it.packageName)
-                        it.resources.openRawResource(id)
-                            .bufferedReader()
-                            .use(BufferedReader::readText)
-                    }
+                    val name = Uri.parse(formattedUrl).lastPathSegment
+                        ?.split(".")
+                        ?.get(0).toString()
+                    val id = it.resources.getIdentifier(name, "raw", it.packageName)
+                    it.resources.openRawResource(id)
                 }
             }
             URLUtil.isFileUrl(formattedUrl) -> {
-                File(Uri.parse(formattedUrl).path)
+                File(Uri.parse(formattedUrl).path).inputStream()
             }
             URLUtil.isNetworkUrl(formattedUrl) -> {
                 httpClient.newCall(Request.Builder()
@@ -103,7 +92,6 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
                     }
                     .build())
                     .await()
-                    .body()
             }
             else -> null
         }
@@ -121,10 +109,10 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
 
     private suspend fun parseHtml(baseUrl: String?, data: String, mimeType: String?, encoding: String?, historyUrl: String?): Document {
         return withContext(Dispatchers.IO) {
-            Jsoup.parse(data).apply {
+            Jsoup.parse(data, baseUrl ?: "").apply {
                 select("style")
                     .forEach {
-                        view.get()?.addStyleSheet("${it.data()}\n")
+                        view.get()?.styles?.add(it.data())
                     }
                 select("link[href]")
                     .forEach {
@@ -134,6 +122,7 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
 
                                 }
                             }
+                            //if (".*.(html|css|js|eot|otf|ttf|woff|woff2)$".toRegex(setOf(RegexOption.IGNORE_CASE)).matches(formattedUrl))
                             val resource = call.await().body()
                             when ("${resource?.contentType()?.type()}/${resource?.contentType()?.subtype()}".toLowerCase()) {
                                 "text/css" -> {
@@ -148,7 +137,7 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
                 select("script")
                     .forEach {
                         if (!it.attributes().hasKeyIgnoreCase("src")) {
-                            view.get()?.addDOMScript("${it.data()}\n")
+                            view.get()?.scripts?.add(it.data())
                             return@forEach
                         }
                         launch {
@@ -176,7 +165,7 @@ class ConstraintWebPresenter(view: ConstraintWebView) : CoroutineScope, Constrai
     override fun reload() {
         stopLoading()
         view.get()?.let {
-            loadUrl(it.getUrl())
+            loadUrl(it.url)
         }
     }
 

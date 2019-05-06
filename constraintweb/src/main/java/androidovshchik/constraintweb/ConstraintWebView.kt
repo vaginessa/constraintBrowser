@@ -12,39 +12,40 @@ interface ConstraintWebView {
 
     var debug: Boolean
 
-    fun getContext(): Context
+    /**
+     * Html code of webpage
+     */
+    var data: String
 
-    fun getUrl(): String
+    val styles: ArrayList<String>
 
-    fun getOriginalUrl(): String
+    val scripts: ArrayList<String>
 
     /**
-     * All instances of parameter [android.webkit.WebView] in callback methods will be null
+     * Readonly field
      */
-    fun setWebViewClient(client: WebViewClient)
+    var url: String
 
     /**
-     * All instances of parameter [android.webkit.WebView] in callback methods will be null
+     * Readonly field
      */
-    fun getWebViewClient(): WebViewClient?
-
-    fun setDownloadListener(listener: DownloadListener)
+    var originalUrl: String
 
     /**
-     * All instances of parameter [android.webkit.WebView] in callback methods will be null
+     * All parameters [android.webkit.WebView] in callback methods will be null
      */
-    fun setWebChromeClient(client: WebChromeClient)
+    var webViewClient: WebViewClient?
 
     /**
-     * All instances of parameter [android.webkit.WebView] in callback methods will be null
+     * All parameters [android.webkit.WebView] in callback methods will be null
      */
-    fun getWebChromeClient(): WebChromeClient?
+    var webChromeClient: WebChromeClient?
+
+    var downloadListener: DownloadListener?
 
     fun setDocument(document: Document)
 
-    fun addStyleSheet(style: String)
-
-    fun addDOMScript(script: String)
+    fun getContext(): Context
 
     /**
      * @return is always null

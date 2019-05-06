@@ -45,16 +45,16 @@ class LightningChromeClient(
         uiController = activity as UIController
     }
 
-    override fun onProgressChanged(view: WebView, newProgress: Int) {
+    override fun onProgressChanged(view: WebView?, newProgress: Int) {
         if (lightningView.isShown) {
             uiController.updateProgress(newProgress)
         }
     }
 
-    override fun onReceivedIcon(view: WebView, icon: Bitmap) {
+    override fun onReceivedIcon(view: WebView?, icon: Bitmap) {
         lightningView.titleInfo.setFavicon(icon)
         uiController.tabChanged(lightningView)
-        cacheFavicon(view.url, icon)
+        cacheFavicon(lightningView.url, icon)
     }
 
     /**
@@ -80,9 +80,7 @@ class LightningChromeClient(
             lightningView.titleInfo.setTitle(activity.getString(R.string.untitled))
         }
         uiController.tabChanged(lightningView)
-        if (view != null && view.url != null) {
-            uiController.updateHistory(title, view.url)
-        }
+        uiController.updateHistory(title, lightningView.url)
     }
 
     override fun requestPermissions(permissions: Set<String>, onGrant: (Boolean) -> Unit) {
@@ -157,13 +155,13 @@ class LightningChromeClient(
                 Unit
         })
 
-    override fun onCreateWindow(view: WebView, isDialog: Boolean, isUserGesture: Boolean,
+    override fun onCreateWindow(view: WebView?, isDialog: Boolean, isUserGesture: Boolean,
                                 resultMsg: Message): Boolean {
         uiController.onCreateWindow(resultMsg)
         return true
     }
 
-    override fun onCloseWindow(window: WebView) = uiController.onCloseWindow(lightningView)
+    override fun onCloseWindow(window: WebView?) = uiController.onCloseWindow(lightningView)
 
     @Suppress("unused", "UNUSED_PARAMETER")
     fun openFileChooser(uploadMsg: ValueCallback<Uri>) = uiController.openFileChooser(uploadMsg)
@@ -176,7 +174,7 @@ class LightningChromeClient(
     fun openFileChooser(uploadMsg: ValueCallback<Uri>, acceptType: String, capture: String) =
         uiController.openFileChooser(uploadMsg)
 
-    override fun onShowFileChooser(webView: WebView, filePathCallback: ValueCallback<Array<Uri>>,
+    override fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>,
                                    fileChooserParams: WebChromeClient.FileChooserParams): Boolean {
         uiController.showFileChooser(filePathCallback)
         return true
